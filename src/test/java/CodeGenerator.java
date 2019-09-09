@@ -18,10 +18,10 @@ import static com.company.project.core.ProjectConstant.*;
  */
 public class CodeGenerator {
     //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/test";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/cpmanager"+"?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8";
     private static final String JDBC_USERNAME = "root";
     private static final String JDBC_PASSWORD = "123456";
-    private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+    private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
 
     private static final String PROJECT_PATH = System.getProperty("user.dir");//项目在硬盘上的基础路径
     private static final String TEMPLATE_FILE_PATH = PROJECT_PATH + "/src/test/resources/generator/template";//模板位置
@@ -33,11 +33,11 @@ public class CodeGenerator {
     private static final String PACKAGE_PATH_SERVICE_IMPL = packageConvertPath(SERVICE_IMPL_PACKAGE);//生成的Service实现存放路径
     private static final String PACKAGE_PATH_CONTROLLER = packageConvertPath(CONTROLLER_PACKAGE);//生成的Controller存放路径
 
-    private static final String AUTHOR = "CodeGenerator";//@author
+    private static final String AUTHOR = "Good0520";//@author
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCode("输入表名");
+        genCode("board_info");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
@@ -83,6 +83,17 @@ public class CodeGenerator {
         pluginConfiguration.setConfigurationType("tk.mybatis.mapper.generator.MapperPlugin");
         pluginConfiguration.addProperty("mappers", MAPPER_INTERFACE_REFERENCE);
         context.addPluginConfiguration(pluginConfiguration);
+
+        /*
+         *  添加swagger的注释接口到model里边，方便查看
+         *  默认添加的内容为sql里COMMENT内容
+         *  该插件位置默认放在test文件夹里边，（因为与项目运行无关）
+         */
+        PluginConfiguration swaggerConfiguration = new PluginConfiguration();
+        swaggerConfiguration.setConfigurationType("com.company.project.GeneratorSwagger2Model");
+        swaggerConfiguration.addProperty("apiModelAnnotationPackage", "io.swagger.annotations.ApiModel");
+        swaggerConfiguration.addProperty("apiModelPropertyAnnotationPackage", "io.swagger.annotations.ApiModelProperty");
+        context.addPluginConfiguration(swaggerConfiguration);
 
         JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
         javaModelGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
