@@ -1,6 +1,7 @@
 package com.company.project.configurer;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInterceptor;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -43,8 +44,10 @@ public class MybatisConfigurer {
         properties.setProperty("supportMethodsArguments", "true");
         pageHelper.setProperties(properties);
 
+        PageInterceptor interceptor = new PageInterceptor();
+        interceptor.setProperties(properties);
         //添加插件
-        factory.setPlugins(new Interceptor[]{pageHelper});
+        factory.setPlugins(new Interceptor[]{interceptor});
 
         //添加XML目录
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
@@ -60,7 +63,7 @@ public class MybatisConfigurer {
 
         //配置通用Mapper，详情请查阅官方文档
         Properties properties = new Properties();
-        properties.setProperty("mappers", MAPPER_INTERFACE_REFERENCE);
+        //properties.setProperty("mappers", MAPPER_INTERFACE_REFERENCE);
         //insert、update是否判断字符串类型!='' 即 test="str != null"表达式内是否追加 and str != ''
         properties.setProperty("notEmpty", "false");
         properties.setProperty("IDENTITY", "MYSQL");
