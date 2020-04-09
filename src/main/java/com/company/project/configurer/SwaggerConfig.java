@@ -28,10 +28,15 @@ public class SwaggerConfig {
     public SwaggerProperties swaggerProperties() {
         return new SwaggerProperties();
     }
+    
+    @Autowired
+    private SwaggerProperties swaggerProperties;
 
     @Bean
     public Docket swaggerSpringMvcPlugin() {
-        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).select()
+        return new Docket(DocumentationType.SWAGGER_2)
+                .enable(swaggerProperties.getEnabled())    
+                .apiInfo(apiInfo()).select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(Api.class)).paths(PathSelectors.any()).build()
                 .securitySchemes(securitySchemes())
                 .securityContexts(securityContexts());
@@ -65,13 +70,13 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 // 页面标题1
-                .title(swaggerProperties().getTitle())
+                .title(swaggerProperties.getTitle())
                 // 描述
-                .description(swaggerProperties().getDescription()).termsOfServiceUrl(swaggerProperties().getTermsOfServiceUrl())
+                .description(swaggerProperties.getDescription()).termsOfServiceUrl(swaggerProperties.getTermsOfServiceUrl())
                 // 创建人
-                .contact(new Contact(swaggerProperties().getContact().getName(), swaggerProperties().getContact().getUrl(), swaggerProperties().getContact().getUrl()))
+                .contact(new Contact(swaggerProperties.getContact().getName(), swaggerProperties.getContact().getUrl(), swaggerProperties.getContact().getUrl()))
                 // 版本号
-                .version(swaggerProperties().getVersion()).build();
+                .version(swaggerProperties.getVersion()).build();
     }
 
 }
